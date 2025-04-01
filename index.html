@@ -1,25 +1,67 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>QRコードスキャン</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script src="https://unpkg.com/html5-qrcode"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 1em;
+      background-color: #f8f8f8;
+      text-align: center;
+    }
+    h2 {
+      font-size: 1.8em;
+      margin-bottom: 1em;
+    }
+    #reader {
+      width: 90%;
+      max-width: 400px;
+      margin: auto;
+      border: 2px solid #ccc;
+      border-radius: 10px;
+    }
+    #result {
+      margin-top: 1.5em;
+      font-size: 1.3em;
+      word-break: break-all;
+    }
+    a {
+      color: #007bff;
+      text-decoration: underline;
+    }
+  </style>
 </head>
 <body>
-  <h2>QRコードをスキャン</h2>
-  <div id="reader" style="width:300px;"></div>
-  <p id="result">スキャン結果：なし</p>
+  <h2>QRコードをスキャン中…</h2>
+  <div id="reader"></div>
+  <p id="result">スキャン結果：まだ未検出</p>
 
   <script>
     function onScanSuccess(decodedText, decodedResult) {
       document.getElementById('result').innerHTML =
         `スキャン結果：<a href="${decodedText}" target="_blank">${decodedText}</a>`;
-      html5QrcodeScanner.clear(); // 一回読み取ったら止める
+      html5QrCode.stop(); // 一度スキャンしたら停止
     }
 
-    const html5QrcodeScanner = new Html5QrcodeScanner(
-      "reader", { fps: 10, qrbox: 250 });
-    html5QrcodeScanner.render(onScanSuccess);
+    const html5QrCode = new Html5Qrcode("reader");
+
+    Html5Qrcode.getCameras().then(cameras => {
+      if (cameras && cameras.length) {
+        html5QrCode.start(
+          { facingMode: "environment" }, // 背面カメラ
+          {
+            fps: 10,
+            qrbox: { width: 250, height: 250 }
+          },
+          onScanSuccess
+        );
+      }
+    }).catch(err => {
+      document.getElementById('result').innerText = `エラー：${err}`;
+    });
   </script>
 </body>
 </html>
