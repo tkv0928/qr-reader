@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>QRコードスキャン</title>
+  <script src="https://unpkg.com/html5-qrcode"></script>
+</head>
+<body>
+  <h2>QRコードをスキャン</h2>
+  <div id="reader" style="width:300px;"></div>
+  <p id="result">スキャン結果：なし</p>
+
+  <script>
+    function onScanSuccess(decodedText, decodedResult) {
+      document.getElementById('result').innerHTML =
+        `スキャン結果：<a href="${decodedText}" target="_blank">${decodedText}</a>`;
+      html5QrcodeScanner.clear(); // 一回読み取ったら止める
+    }
+
+    const html5QrcodeScanner = new Html5QrcodeScanner(
+      "reader", { fps: 10, qrbox: 250 });
+    html5QrcodeScanner.render(onScanSuccess);
+  </script>
+</body>
+</html>
